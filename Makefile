@@ -1,28 +1,25 @@
-.PHONY: up down restart logs clean mysql-backup mysql-restore
-
-# Start all services
 up:
-	docker-compose up --build -d
+	docker-compose up -d --build
 
-# Stop all services
 down:
 	docker-compose down
 
-# Restart all services
-restart: down up
+restart:
+	make down
+	make up
 
-# Show logs
 logs:
 	docker-compose logs -f
 
-# Clean up containers and volumes
 clean:
-	docker-compose down -v
+	docker-compose down -v --remove-orphans
+	docker system prune -f
 
-# Backup MySQL database
-mysql-backup:
-	docker exec mysql-strapi sh -c 'mysqldump -u strapi_user -pstrapi_password strapi_ecommerce > /var/lib/mysql/backup.sql'
+install:
+	docker-compose exec backend npm install
+	docker-compose exec frontend npm install
 
-# Restore MySQL database
-mysql-restore:
-	docker exec mysql-strapi sh -c 'mysql -u strapi_user -pstrapi_password strapi_ecommerce < /var/lib/mysql/backup.sql'
+start:
+	make up
+	docker-compose exec backend npm run develop &
+	docker-compose exec frontend npm start &
