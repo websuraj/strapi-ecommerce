@@ -1,8 +1,0 @@
-:wq
-[submodule "backend"]
-    path = backend
-    url = https://github.com/websuraj/backend.git
-
-[submodule "frontend"]
-    path = frontend
-    url = https://github.com/websuraj/frontend.git
