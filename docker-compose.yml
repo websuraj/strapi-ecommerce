@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0
     container_name: mysql-strapi
     restart: always
     environment:
@@ -19,22 +19,28 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     restart: always
-    depends_on:
-      - mysql
     environment:
       PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: sock123421@13
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - "8080:80"
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: strapi-backend
     restart: always
     depends_on:
       - mysql
-    env_file:
-      - ./backend/.env  # Load environment variables
+    environment:
+      DATABASE_CLIENT: mysql
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_NAME: ecomm-sock
+      DATABASE_USERNAME: sock
+      DATABASE_PASSWORD: sock123421@13
+      DATABASE_SSL: "false"
     ports:
       - "1337:1337"
     volumes:
@@ -42,7 +48,9 @@ services:
       - /app/node_modules
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: react-frontend
     restart: always
     depends_on:
@@ -52,8 +60,6 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    environment:
-      REACT_APP_BACKEND_URL: http://localhost:1337  # Connect React to Strapi
 
 volumes:
   mysql_data:
